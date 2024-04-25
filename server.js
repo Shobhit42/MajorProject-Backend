@@ -48,21 +48,26 @@ app.post('/register', async (req, res) => {
   }
 });
 
+// Example login route handler (assuming you have a 'User' model)
+
 app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
   try {
-    const { email, password } = req.body;
-
     const user = await User.findOne({ email, password });
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+    if (user) {
+      // Login successful, send user data as JSON
+      res.json({ message: 'Login successful', user });
+    } else {
+      // Login failed, send error message as JSON
+      res.status(401).json({ error: 'Invalid username or password' });
     }
-
-    res.status(200).json({ message: 'Login successful', user });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Failed to login' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 // Start the server
 app.listen(PORT, () => {
