@@ -41,7 +41,19 @@ app.post('/register', async (req, res) => {
     const newUser = new User({ name, email, password });
 
     await newUser.save();
-    res.status(200).json({ message: 'User registered successfully' });
+    try {
+      const user = await User.findOne({ email, password });
+      if (user) {
+        // Login successful, send user data as JSON
+        res.json({ message: 'register successful', user });
+      } else {
+        // Login failed, send error message as JSON
+        res.status(401).json({ error: 'Invalid username or password' });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to register user' });
